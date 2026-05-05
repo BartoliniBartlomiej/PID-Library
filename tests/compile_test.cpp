@@ -44,11 +44,13 @@ int main() {
         .output_limits = {-100.0, 100.0},
         .form = pid::PIDForm::Parallel
     };
-    
+
     pid::PIDController<double> controller(pid_config);
-    
+        
+    std::cout << controller.get_gains().kd;
+
     double output = controller.compute(100.0, 95.0);
-    std::cout << "PID output for error=5.0: " << output << std::endl;
+    // std::cout << "PID output for error=5.0: " << output << std::endl;
     
     auto debug = controller.get_debug_info();
     std::cout << "  P term: " << debug.p_term << std::endl;

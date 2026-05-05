@@ -50,7 +50,23 @@ enum class PIDForm {
  * @tparam Clock Clock type for time measurements (default: SystemClock)
  * 
  * Example usage:
- * @code
+ * ```cpp
+ * using namespace pid;
+ * 
+ * PIDController<double>::Config config{
+ *     .gains = {.kp = 1.0, .ki = 0.1, .kd = 0.05},
+ *     .output_limits = {-100.0, 100.0}
+ * };
+ * 
+ * PIDController<double> controller(config);
+ * 
+ * double setpoint = 100.0;
+ * double measurement = 95.0;
+ * double control_output = controller.compute(setpoint, measurement);
+ * ```
+ * 
+ * @example
+ * @code {.cpp}
  * using namespace pid;
  * 
  * PIDController<double>::Config config{

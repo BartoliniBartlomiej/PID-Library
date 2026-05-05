@@ -23,9 +23,7 @@ cmake_install.cmake
 install_manifest.txt
 
 # Documentation
-docs/html/
-docs/latex/
-docs/xml/
+docs/
 Doxyfile
 
 
