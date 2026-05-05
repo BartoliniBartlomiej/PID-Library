@@ -21,6 +21,9 @@ jobs:
       - name: Generate docs
         run: doxygen Doxyfile
 
+      - name: Disable Jekyll
+        run: touch docs/html/.nojekyll
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
