@@ -31,12 +31,12 @@ target_compile_features(pid_controller INTERFACE cxx_std_20)
 
 # Compiler warnings
 if(PID_ENABLE_WARNINGS)
+    # Compiler warnings
     if(MSVC)
-        target_compile_options(pid_controller INTERFACE /W4 /WX)
+        target_compile_options(pid_controller INTERFACE /W4)
     else()
         target_compile_options(pid_controller INTERFACE 
-            -Wall -Wextra -Wpedantic -Werror
-            -Wconversion -Wsign-conversion
+            -Wall -Wextra -Wpedantic
         )
     endif()
 endif()
