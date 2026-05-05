@@ -26,6 +26,8 @@ install_manifest.txt
 docs/html/
 docs/latex/
 docs/xml/
+Doxyfile
+
 
 # Coverage
 *.gcov
