@@ -1,0 +1,40 @@
+#include "pid_controller/concepts.hpp"
+#include "pid_controller/types.hpp"
+#include "pid_controller/clock_interface.hpp"
+
+#include <iostream>
+
+// Test czy concepts działają
+static_assert(pid::FloatingPoint<double>);
+static_assert(pid::FloatingPoint<float>);
+static_assert(!pid::FloatingPoint<int>);
+
+// Test czy clock interface działa
+static_assert(pid::ClockInterface<pid::SystemClock>);
+static_assert(pid::ClockInterface<pid::ManualClock>);
+
+int main() {
+    std::cout << "=== PID Controller Library - Compile Test ===" << std::endl;
+    
+    // Test error handling
+    auto err = pid::make_error_code(pid::PIDError::InvalidGains);
+    std::cout << "Error code: " << err.message() << std::endl;
+    
+    // Test SystemClock
+    pid::SystemClock sys_clock;
+    auto t1 = sys_clock.now();
+    (void)t1; // Suppress unused warning
+    std::cout << "SystemClock works!" << std::endl;
+    
+    // Test ManualClock
+    pid::ManualClock manual_clock;
+    auto t2 = manual_clock.now();
+    manual_clock.advance(std::chrono::milliseconds(100));
+    auto t3 = manual_clock.now();
+    
+    auto diff = std::chrono::duration_cast<std::chrono::milliseconds>(t3 - t2);
+    std::cout << "ManualClock advanced by: " << diff.count() << "ms" << std::endl;
+    
+    std::cout << "\n✅ All compile-time tests passed!" << std::endl;
+    return 0;
+}
