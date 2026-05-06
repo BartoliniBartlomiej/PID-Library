@@ -5,12 +5,12 @@
 
 #include <iostream>
 
-// Test czy concepts działają
+// Concepts tests
 static_assert(pid::FloatingPoint<double>);
 static_assert(pid::FloatingPoint<float>);
 static_assert(!pid::FloatingPoint<int>);
 
-// Test czy clock interface działa
+// Clock interface tests
 static_assert(pid::ClockInterface<pid::SystemClock>);
 static_assert(pid::ClockInterface<pid::ManualClock>);
 
