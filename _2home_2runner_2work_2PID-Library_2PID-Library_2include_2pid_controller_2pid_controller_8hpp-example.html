@@ -292,6 +292,8 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2PID-Library_2PID
 <div class="line">        <span class="keywordflow">return</span> debug_info_;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
+<div class="line">    [[nodiscard]] Clock&amp; <a id="a28" name="a28"></a><a class="code hl_function" href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">get_clock</a>() <span class="keyword">noexcept</span> { <span class="keywordflow">return</span> clock_; }</div>
+<div class="line"> </div>
 <div class="line"><span class="keyword">private</span>:</div>
 <div class="line">    Config config_;</div>
 <div class="line">    Clock clock_;</div>
@@ -387,6 +389,7 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2PID-Library_2PID
 <div class="line">} <span class="comment">// namespace pid</span></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a37aa303fb29247d20d18fa8d9da26a42"><div class="ttname"><a href="classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42">pid::PIDController::compute</a></div><div class="ttdeci">T compute(T setpoint, T process_variable) noexcept</div><div class="ttdoc">Compute control output.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:182</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a483bd92c294f44733941ea9d06ff9d54"><div class="ttname"><a href="classpid_1_1PIDController.html#a483bd92c294f44733941ea9d06ff9d54">pid::PIDController::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Reset controller to initial state.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:242</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a5e68eeeecb24a45bb9b8b7b56740e2cc"><div class="ttname"><a href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">pid::PIDController::get_clock</a></div><div class="ttdeci">Clock &amp; get_clock() noexcept</div><div class="ttdoc">Get the clock object.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:300</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a6d76981c38bddde1c64dfb6d107ab587"><div class="ttname"><a href="classpid_1_1PIDController.html#a6d76981c38bddde1c64dfb6d107ab587">pid::PIDController::get_gains</a></div><div class="ttdeci">Gains get_gains() const noexcept</div><div class="ttdoc">Get current PID gains.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:265</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a7a4052ef97e822184d430aae1dc9ed71"><div class="ttname"><a href="classpid_1_1PIDController.html#a7a4052ef97e822184d430aae1dc9ed71">pid::PIDController::set_output_limits</a></div><div class="ttdeci">void set_output_limits(const Limits &amp;limits) noexcept</div><div class="ttdoc">Update output limits during runtime.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:273</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a87df63b9bacafa3c442482d9603e3ea7"><div class="ttname"><a href="classpid_1_1PIDController.html#a87df63b9bacafa3c442482d9603e3ea7">pid::PIDController::get_debug_info</a></div><div class="ttdeci">DebugInfo get_debug_info() const noexcept</div><div class="ttdoc">Get diagnostic information from last compute() call.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:291</div></div>

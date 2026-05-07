@@ -138,6 +138,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a87df63b9bacafa3c442482d9603e3ea7" id="r_a87df63b9bacafa3c442482d9603e3ea7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpid_1_1PIDController_1_1DebugInfo.html">DebugInfo</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpid_1_1PIDController.html#a87df63b9bacafa3c442482d9603e3ea7">get_debug_info</a> () const noexcept</td></tr>
 <tr class="memdesc:a87df63b9bacafa3c442482d9603e3ea7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get diagnostic information from last <a class="el" href="classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42" title="Compute control output.">compute()</a> call.  <br /></td></tr>
 <tr class="separator:a87df63b9bacafa3c442482d9603e3ea7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5e68eeeecb24a45bb9b8b7b56740e2cc" id="r_a5e68eeeecb24a45bb9b8b7b56740e2cc"><td class="memItemLeft" align="right" valign="top">Clock &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">get_clock</a> () noexcept</td></tr>
+<tr class="memdesc:a5e68eeeecb24a45bb9b8b7b56740e2cc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the clock object.  <br /></td></tr>
+<tr class="separator:a5e68eeeecb24a45bb9b8b7b56740e2cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><div class="compoundTemplParams">template&lt;FloatingPoint T = double, ClockInterface Clock = SystemClock&gt;<br />
@@ -245,6 +248,38 @@ template&lt;FloatingPoint T = double, ClockInterface Clock = SystemClock&gt; </d
 <dl class="section return"><dt>Returns</dt><dd>Control output (clamped to output_limits)</dd></dl>
 <p>This is the main function called in each control loop iteration. It computes the error, updates internal state, and returns the control signal. </p>
 <dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2home_2runner_2work_2PID-Library_2PID-Library_2include_2pid_controller_2pid_controller_8hpp-example.html#a22">/home/runner/work/PID-Library/PID-Library/include/pid_controller/pid_controller.hpp</a>.</dd>
+</dl>
+
+</div>
+</div>
+<a id="a5e68eeeecb24a45bb9b8b7b56740e2cc" name="a5e68eeeecb24a45bb9b8b7b56740e2cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5e68eeeecb24a45bb9b8b7b56740e2cc">&#9670;&#160;</a></span>get_clock()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;FloatingPoint T = double, ClockInterface Clock = SystemClock&gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Clock &amp; <a class="el" href="classpid_1_1PIDController.html">pid::PIDController</a>&lt; T, Clock &gt;::get_clock </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">noexcept</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the clock object. </p>
+<dl class="section return"><dt>Returns</dt><dd>Clock&amp; </dd></dl>
+<dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2home_2runner_2work_2PID-Library_2PID-Library_2include_2pid_controller_2pid_controller_8hpp-example.html#a28">/home/runner/work/PID-Library/PID-Library/include/pid_controller/pid_controller.hpp</a>.</dd>
 </dl>
 
 </div>

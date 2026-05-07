@@ -294,103 +294,106 @@ $(document).ready(function(){initNavTree('pid__controller_8hpp_source.html','');
 <div class="line"><a id="l00293" name="l00293"></a><span class="lineno">  293</span>    }</div>
 </div>
 <div class="line"><a id="l00294" name="l00294"></a><span class="lineno">  294</span> </div>
-<div class="line"><a id="l00295" name="l00295"></a><span class="lineno">  295</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00296" name="l00296"></a><span class="lineno">  296</span>    Config config_;</div>
-<div class="line"><a id="l00297" name="l00297"></a><span class="lineno">  297</span>    Clock clock_;</div>
-<div class="line"><a id="l00298" name="l00298"></a><span class="lineno">  298</span>    </div>
-<div class="line"><a id="l00299" name="l00299"></a><span class="lineno">  299</span>    <span class="comment">// Internal state</span></div>
-<div class="line"><a id="l00300" name="l00300"></a><span class="lineno">  300</span>    T integral_{0};</div>
-<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span>    T previous_error_{0};</div>
-<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span>    T previous_derivative_{0};</div>
-<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    T previous_output_{0};</div>
-<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    <span class="keyword">typename</span> Clock::time_point last_time_;</div>
-<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    <span class="keywordtype">bool</span> first_run_{<span class="keyword">true</span>};</div>
-<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    </div>
-<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    <span class="comment">// Debug information</span></div>
-<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    <span class="keyword">mutable</span> DebugInfo debug_info_;</div>
-<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span> </div>
-<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    [[nodiscard]] T compute_parallel(T error, Duration dt) <span class="keyword">noexcept</span> {</div>
-<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span>        <span class="keyword">const</span> T dt_sec = dt.count();</div>
-<div class="line"><a id="l00317" name="l00317"></a><span class="lineno">  317</span>        </div>
-<div class="line"><a id="l00318" name="l00318"></a><span class="lineno">  318</span>        <span class="comment">// Proportional term</span></div>
-<div class="line"><a id="l00319" name="l00319"></a><span class="lineno">  319</span>        <span class="keyword">const</span> T p_term = config_.gains.kp * error;</div>
-<div class="line"><a id="l00320" name="l00320"></a><span class="lineno">  320</span>        </div>
-<div class="line"><a id="l00321" name="l00321"></a><span class="lineno">  321</span>        <span class="comment">// Integral term (trapezoidal integration)</span></div>
-<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>        integral_ += error * dt_sec;</div>
-<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <span class="keyword">const</span> T i_term = config_.gains.ki * integral_;</div>
+<div class="line"><a id="l00300" name="l00300"></a><span class="lineno"><a class="line" href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">  300</a></span>    [[nodiscard]] Clock&amp; <a class="code hl_function" href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">get_clock</a>() noexcept { <span class="keywordflow">return</span> clock_; }</div>
+<div class="line"><a id="l00301" name="l00301"></a><span class="lineno">  301</span> </div>
+<div class="line"><a id="l00302" name="l00302"></a><span class="lineno">  302</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00303" name="l00303"></a><span class="lineno">  303</span>    Config config_;</div>
+<div class="line"><a id="l00304" name="l00304"></a><span class="lineno">  304</span>    Clock clock_;</div>
+<div class="line"><a id="l00305" name="l00305"></a><span class="lineno">  305</span>    </div>
+<div class="line"><a id="l00306" name="l00306"></a><span class="lineno">  306</span>    <span class="comment">// Internal state</span></div>
+<div class="line"><a id="l00307" name="l00307"></a><span class="lineno">  307</span>    T integral_{0};</div>
+<div class="line"><a id="l00308" name="l00308"></a><span class="lineno">  308</span>    T previous_error_{0};</div>
+<div class="line"><a id="l00309" name="l00309"></a><span class="lineno">  309</span>    T previous_derivative_{0};</div>
+<div class="line"><a id="l00310" name="l00310"></a><span class="lineno">  310</span>    T previous_output_{0};</div>
+<div class="line"><a id="l00311" name="l00311"></a><span class="lineno">  311</span>    <span class="keyword">typename</span> Clock::time_point last_time_;</div>
+<div class="line"><a id="l00312" name="l00312"></a><span class="lineno">  312</span>    <span class="keywordtype">bool</span> first_run_{<span class="keyword">true</span>};</div>
+<div class="line"><a id="l00313" name="l00313"></a><span class="lineno">  313</span>    </div>
+<div class="line"><a id="l00314" name="l00314"></a><span class="lineno">  314</span>    <span class="comment">// Debug information</span></div>
+<div class="line"><a id="l00315" name="l00315"></a><span class="lineno">  315</span>    <span class="keyword">mutable</span> DebugInfo debug_info_;</div>
+<div class="line"><a id="l00316" name="l00316"></a><span class="lineno">  316</span> </div>
+<div class="line"><a id="l00322" name="l00322"></a><span class="lineno">  322</span>    [[nodiscard]] T compute_parallel(T error, Duration dt) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00323" name="l00323"></a><span class="lineno">  323</span>        <span class="keyword">const</span> T dt_sec = dt.count();</div>
 <div class="line"><a id="l00324" name="l00324"></a><span class="lineno">  324</span>        </div>
-<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        <span class="comment">// Derivative term (with optional filtering)</span></div>
-<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        T derivative = (error - previous_error_) / dt_sec;</div>
-<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        derivative = apply_derivative_filter(derivative, dt);</div>
-<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="keyword">const</span> T d_term = config_.gains.kd * derivative;</div>
-<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        </div>
-<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="comment">// Update debug info</span></div>
-<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        debug_info_.p_term = p_term;</div>
-<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        debug_info_.i_term = i_term;</div>
-<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        debug_info_.d_term = d_term;</div>
-<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        </div>
-<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keywordflow">return</span> p_term + i_term + d_term;</div>
-<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>    }</div>
-<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span> </div>
-<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span>    [[nodiscard]] T compute_series(T error, Duration dt) <span class="keyword">noexcept</span> {</div>
-<div class="line"><a id="l00345" name="l00345"></a><span class="lineno">  345</span>        <span class="keyword">const</span> T dt_sec = dt.count();</div>
-<div class="line"><a id="l00346" name="l00346"></a><span class="lineno">  346</span>        </div>
-<div class="line"><a id="l00347" name="l00347"></a><span class="lineno">  347</span>        <span class="comment">// Integral term</span></div>
-<div class="line"><a id="l00348" name="l00348"></a><span class="lineno">  348</span>        integral_ += error * dt_sec;</div>
-<div class="line"><a id="l00349" name="l00349"></a><span class="lineno">  349</span>        T i_contribution = 0;</div>
-<div class="line"><a id="l00350" name="l00350"></a><span class="lineno">  350</span>        <span class="keywordflow">if</span> (config_.gains.ki &gt; 0 &amp;&amp; config_.gains.kp &gt; 0) {</div>
-<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>            <span class="keyword">const</span> T Ti = config_.gains.kp / config_.gains.ki;</div>
-<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>            i_contribution = integral_ / Ti;</div>
-<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        }</div>
-<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        </div>
-<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        <span class="comment">// Derivative term</span></div>
-<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>        T derivative = (error - previous_error_) / dt_sec;</div>
-<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>        derivative = apply_derivative_filter(derivative, dt);</div>
-<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>        T d_contribution = 0;</div>
-<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>        <span class="keywordflow">if</span> (config_.gains.kp &gt; 0) {</div>
-<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>            <span class="keyword">const</span> T Td = config_.gains.kd / config_.gains.kp;</div>
-<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>            d_contribution = Td * derivative;</div>
-<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        }</div>
-<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        </div>
-<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        <span class="keyword">const</span> T output = config_.gains.kp * (error + i_contribution + d_contribution);</div>
-<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        </div>
-<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="comment">// Update debug info</span></div>
-<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>        debug_info_.p_term = config_.gains.kp * error;</div>
-<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>        debug_info_.i_term = config_.gains.kp * i_contribution;</div>
-<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        debug_info_.d_term = config_.gains.kp * d_contribution;</div>
+<div class="line"><a id="l00325" name="l00325"></a><span class="lineno">  325</span>        <span class="comment">// Proportional term</span></div>
+<div class="line"><a id="l00326" name="l00326"></a><span class="lineno">  326</span>        <span class="keyword">const</span> T p_term = config_.gains.kp * error;</div>
+<div class="line"><a id="l00327" name="l00327"></a><span class="lineno">  327</span>        </div>
+<div class="line"><a id="l00328" name="l00328"></a><span class="lineno">  328</span>        <span class="comment">// Integral term (trapezoidal integration)</span></div>
+<div class="line"><a id="l00329" name="l00329"></a><span class="lineno">  329</span>        integral_ += error * dt_sec;</div>
+<div class="line"><a id="l00330" name="l00330"></a><span class="lineno">  330</span>        <span class="keyword">const</span> T i_term = config_.gains.ki * integral_;</div>
+<div class="line"><a id="l00331" name="l00331"></a><span class="lineno">  331</span>        </div>
+<div class="line"><a id="l00332" name="l00332"></a><span class="lineno">  332</span>        <span class="comment">// Derivative term (with optional filtering)</span></div>
+<div class="line"><a id="l00333" name="l00333"></a><span class="lineno">  333</span>        T derivative = (error - previous_error_) / dt_sec;</div>
+<div class="line"><a id="l00334" name="l00334"></a><span class="lineno">  334</span>        derivative = apply_derivative_filter(derivative, dt);</div>
+<div class="line"><a id="l00335" name="l00335"></a><span class="lineno">  335</span>        <span class="keyword">const</span> T d_term = config_.gains.kd * derivative;</div>
+<div class="line"><a id="l00336" name="l00336"></a><span class="lineno">  336</span>        </div>
+<div class="line"><a id="l00337" name="l00337"></a><span class="lineno">  337</span>        <span class="comment">// Update debug info</span></div>
+<div class="line"><a id="l00338" name="l00338"></a><span class="lineno">  338</span>        debug_info_.p_term = p_term;</div>
+<div class="line"><a id="l00339" name="l00339"></a><span class="lineno">  339</span>        debug_info_.i_term = i_term;</div>
+<div class="line"><a id="l00340" name="l00340"></a><span class="lineno">  340</span>        debug_info_.d_term = d_term;</div>
+<div class="line"><a id="l00341" name="l00341"></a><span class="lineno">  341</span>        </div>
+<div class="line"><a id="l00342" name="l00342"></a><span class="lineno">  342</span>        <span class="keywordflow">return</span> p_term + i_term + d_term;</div>
+<div class="line"><a id="l00343" name="l00343"></a><span class="lineno">  343</span>    }</div>
+<div class="line"><a id="l00344" name="l00344"></a><span class="lineno">  344</span> </div>
+<div class="line"><a id="l00351" name="l00351"></a><span class="lineno">  351</span>    [[nodiscard]] T compute_series(T error, Duration dt) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00352" name="l00352"></a><span class="lineno">  352</span>        <span class="keyword">const</span> T dt_sec = dt.count();</div>
+<div class="line"><a id="l00353" name="l00353"></a><span class="lineno">  353</span>        </div>
+<div class="line"><a id="l00354" name="l00354"></a><span class="lineno">  354</span>        <span class="comment">// Integral term</span></div>
+<div class="line"><a id="l00355" name="l00355"></a><span class="lineno">  355</span>        integral_ += error * dt_sec;</div>
+<div class="line"><a id="l00356" name="l00356"></a><span class="lineno">  356</span>        T i_contribution = 0;</div>
+<div class="line"><a id="l00357" name="l00357"></a><span class="lineno">  357</span>        <span class="keywordflow">if</span> (config_.gains.ki &gt; 0 &amp;&amp; config_.gains.kp &gt; 0) {</div>
+<div class="line"><a id="l00358" name="l00358"></a><span class="lineno">  358</span>            <span class="keyword">const</span> T Ti = config_.gains.kp / config_.gains.ki;</div>
+<div class="line"><a id="l00359" name="l00359"></a><span class="lineno">  359</span>            i_contribution = integral_ / Ti;</div>
+<div class="line"><a id="l00360" name="l00360"></a><span class="lineno">  360</span>        }</div>
+<div class="line"><a id="l00361" name="l00361"></a><span class="lineno">  361</span>        </div>
+<div class="line"><a id="l00362" name="l00362"></a><span class="lineno">  362</span>        <span class="comment">// Derivative term</span></div>
+<div class="line"><a id="l00363" name="l00363"></a><span class="lineno">  363</span>        T derivative = (error - previous_error_) / dt_sec;</div>
+<div class="line"><a id="l00364" name="l00364"></a><span class="lineno">  364</span>        derivative = apply_derivative_filter(derivative, dt);</div>
+<div class="line"><a id="l00365" name="l00365"></a><span class="lineno">  365</span>        T d_contribution = 0;</div>
+<div class="line"><a id="l00366" name="l00366"></a><span class="lineno">  366</span>        <span class="keywordflow">if</span> (config_.gains.kp &gt; 0) {</div>
+<div class="line"><a id="l00367" name="l00367"></a><span class="lineno">  367</span>            <span class="keyword">const</span> T Td = config_.gains.kd / config_.gains.kp;</div>
+<div class="line"><a id="l00368" name="l00368"></a><span class="lineno">  368</span>            d_contribution = Td * derivative;</div>
+<div class="line"><a id="l00369" name="l00369"></a><span class="lineno">  369</span>        }</div>
 <div class="line"><a id="l00370" name="l00370"></a><span class="lineno">  370</span>        </div>
-<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <span class="keywordflow">return</span> output;</div>
-<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>    }</div>
-<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span> </div>
-<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span>    [[nodiscard]] T apply_derivative_filter(T raw_derivative, Duration dt) <span class="keyword">noexcept</span> {</div>
-<div class="line"><a id="l00381" name="l00381"></a><span class="lineno">  381</span>        <span class="keywordflow">if</span> (config_.derivative_filter_coeff &lt;= 0) {</div>
-<div class="line"><a id="l00382" name="l00382"></a><span class="lineno">  382</span>            <span class="keywordflow">return</span> raw_derivative; <span class="comment">// No filtering</span></div>
-<div class="line"><a id="l00383" name="l00383"></a><span class="lineno">  383</span>        }</div>
-<div class="line"><a id="l00384" name="l00384"></a><span class="lineno">  384</span>        </div>
-<div class="line"><a id="l00385" name="l00385"></a><span class="lineno">  385</span>        <span class="keyword">const</span> T alpha = config_.derivative_filter_coeff;</div>
-<div class="line"><a id="l00386" name="l00386"></a><span class="lineno">  386</span>        <span class="keyword">const</span> T filtered = alpha * previous_derivative_ + (1 - alpha) * raw_derivative;</div>
-<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>        previous_derivative_ = filtered;</div>
-<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>        </div>
-<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>        <span class="keywordflow">return</span> filtered;</div>
-<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>    }</div>
-<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span> </div>
-<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    <span class="keywordtype">void</span> apply_anti_windup(T clamped_output) <span class="keyword">noexcept</span> {</div>
-<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span>        <span class="comment">// If output was clamped, back-calculate integral</span></div>
-<div class="line"><a id="l00399" name="l00399"></a><span class="lineno">  399</span>        <span class="keyword">const</span> T unclamped_i_term = debug_info_.i_term;</div>
-<div class="line"><a id="l00400" name="l00400"></a><span class="lineno">  400</span>        <span class="keyword">const</span> T actual_i_term = clamped_output - debug_info_.p_term - debug_info_.d_term;</div>
-<div class="line"><a id="l00401" name="l00401"></a><span class="lineno">  401</span>        </div>
-<div class="line"><a id="l00402" name="l00402"></a><span class="lineno">  402</span>        <span class="comment">// Update integral to prevent further windup</span></div>
-<div class="line"><a id="l00403" name="l00403"></a><span class="lineno">  403</span>        <span class="keywordflow">if</span> (config_.gains.ki &gt; 0) {</div>
-<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>            integral_ = actual_i_term / config_.gains.ki;</div>
-<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>        }</div>
-<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>    }</div>
-<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>};</div>
+<div class="line"><a id="l00371" name="l00371"></a><span class="lineno">  371</span>        <span class="keyword">const</span> T output = config_.gains.kp * (error + i_contribution + d_contribution);</div>
+<div class="line"><a id="l00372" name="l00372"></a><span class="lineno">  372</span>        </div>
+<div class="line"><a id="l00373" name="l00373"></a><span class="lineno">  373</span>        <span class="comment">// Update debug info</span></div>
+<div class="line"><a id="l00374" name="l00374"></a><span class="lineno">  374</span>        debug_info_.p_term = config_.gains.kp * error;</div>
+<div class="line"><a id="l00375" name="l00375"></a><span class="lineno">  375</span>        debug_info_.i_term = config_.gains.kp * i_contribution;</div>
+<div class="line"><a id="l00376" name="l00376"></a><span class="lineno">  376</span>        debug_info_.d_term = config_.gains.kp * d_contribution;</div>
+<div class="line"><a id="l00377" name="l00377"></a><span class="lineno">  377</span>        </div>
+<div class="line"><a id="l00378" name="l00378"></a><span class="lineno">  378</span>        <span class="keywordflow">return</span> output;</div>
+<div class="line"><a id="l00379" name="l00379"></a><span class="lineno">  379</span>    }</div>
+<div class="line"><a id="l00380" name="l00380"></a><span class="lineno">  380</span> </div>
+<div class="line"><a id="l00387" name="l00387"></a><span class="lineno">  387</span>    [[nodiscard]] T apply_derivative_filter(T raw_derivative, Duration dt) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00388" name="l00388"></a><span class="lineno">  388</span>        <span class="keywordflow">if</span> (config_.derivative_filter_coeff &lt;= 0) {</div>
+<div class="line"><a id="l00389" name="l00389"></a><span class="lineno">  389</span>            <span class="keywordflow">return</span> raw_derivative; <span class="comment">// No filtering</span></div>
+<div class="line"><a id="l00390" name="l00390"></a><span class="lineno">  390</span>        }</div>
+<div class="line"><a id="l00391" name="l00391"></a><span class="lineno">  391</span>        </div>
+<div class="line"><a id="l00392" name="l00392"></a><span class="lineno">  392</span>        <span class="keyword">const</span> T alpha = config_.derivative_filter_coeff;</div>
+<div class="line"><a id="l00393" name="l00393"></a><span class="lineno">  393</span>        <span class="keyword">const</span> T filtered = alpha * previous_derivative_ + (1 - alpha) * raw_derivative;</div>
+<div class="line"><a id="l00394" name="l00394"></a><span class="lineno">  394</span>        previous_derivative_ = filtered;</div>
+<div class="line"><a id="l00395" name="l00395"></a><span class="lineno">  395</span>        </div>
+<div class="line"><a id="l00396" name="l00396"></a><span class="lineno">  396</span>        <span class="keywordflow">return</span> filtered;</div>
+<div class="line"><a id="l00397" name="l00397"></a><span class="lineno">  397</span>    }</div>
+<div class="line"><a id="l00398" name="l00398"></a><span class="lineno">  398</span> </div>
+<div class="line"><a id="l00404" name="l00404"></a><span class="lineno">  404</span>    <span class="keywordtype">void</span> apply_anti_windup(T clamped_output) <span class="keyword">noexcept</span> {</div>
+<div class="line"><a id="l00405" name="l00405"></a><span class="lineno">  405</span>        <span class="comment">// If output was clamped, back-calculate integral</span></div>
+<div class="line"><a id="l00406" name="l00406"></a><span class="lineno">  406</span>        <span class="keyword">const</span> T unclamped_i_term = debug_info_.i_term;</div>
+<div class="line"><a id="l00407" name="l00407"></a><span class="lineno">  407</span>        <span class="keyword">const</span> T actual_i_term = clamped_output - debug_info_.p_term - debug_info_.d_term;</div>
+<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span>        </div>
+<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>        <span class="comment">// Update integral to prevent further windup</span></div>
+<div class="line"><a id="l00410" name="l00410"></a><span class="lineno">  410</span>        <span class="keywordflow">if</span> (config_.gains.ki &gt; 0) {</div>
+<div class="line"><a id="l00411" name="l00411"></a><span class="lineno">  411</span>            integral_ = actual_i_term / config_.gains.ki;</div>
+<div class="line"><a id="l00412" name="l00412"></a><span class="lineno">  412</span>        }</div>
+<div class="line"><a id="l00413" name="l00413"></a><span class="lineno">  413</span>    }</div>
+<div class="line"><a id="l00414" name="l00414"></a><span class="lineno">  414</span>};</div>
 </div>
-<div class="line"><a id="l00408" name="l00408"></a><span class="lineno">  408</span> </div>
-<div class="line"><a id="l00409" name="l00409"></a><span class="lineno">  409</span>} <span class="comment">// namespace pid</span></div>
+<div class="line"><a id="l00415" name="l00415"></a><span class="lineno">  415</span> </div>
+<div class="line"><a id="l00416" name="l00416"></a><span class="lineno">  416</span>} <span class="comment">// namespace pid</span></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html"><div class="ttname"><a href="classpid_1_1PIDController.html">pid::PIDController</a></div><div class="ttdef"><b>Definition</b> pid_controller.hpp:85</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a37aa303fb29247d20d18fa8d9da26a42"><div class="ttname"><a href="classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42">pid::PIDController::compute</a></div><div class="ttdeci">T compute(T setpoint, T process_variable) noexcept</div><div class="ttdoc">Compute control output.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:182</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a483bd92c294f44733941ea9d06ff9d54"><div class="ttname"><a href="classpid_1_1PIDController.html#a483bd92c294f44733941ea9d06ff9d54">pid::PIDController::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Reset controller to initial state.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:242</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a5e68eeeecb24a45bb9b8b7b56740e2cc"><div class="ttname"><a href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">pid::PIDController::get_clock</a></div><div class="ttdeci">Clock &amp; get_clock() noexcept</div><div class="ttdoc">Get the clock object.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:300</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a6d76981c38bddde1c64dfb6d107ab587"><div class="ttname"><a href="classpid_1_1PIDController.html#a6d76981c38bddde1c64dfb6d107ab587">pid::PIDController::get_gains</a></div><div class="ttdeci">Gains get_gains() const noexcept</div><div class="ttdoc">Get current PID gains.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:265</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a7a4052ef97e822184d430aae1dc9ed71"><div class="ttname"><a href="classpid_1_1PIDController.html#a7a4052ef97e822184d430aae1dc9ed71">pid::PIDController::set_output_limits</a></div><div class="ttdeci">void set_output_limits(const Limits &amp;limits) noexcept</div><div class="ttdoc">Update output limits during runtime.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:273</div></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a87df63b9bacafa3c442482d9603e3ea7"><div class="ttname"><a href="classpid_1_1PIDController.html#a87df63b9bacafa3c442482d9603e3ea7">pid::PIDController::get_debug_info</a></div><div class="ttdeci">DebugInfo get_debug_info() const noexcept</div><div class="ttdoc">Get diagnostic information from last compute() call.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:291</div></div>
