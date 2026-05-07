@@ -58,5 +58,5 @@ int main() {
     std::cout << "  D term: " << debug.d_term << std::endl;
 
     std::cout << "\n✅ All compile-time tests passed!" << std::endl;
-    return 0;
+    return 0; // TODO: add unit tests for parallel and series PID
 }

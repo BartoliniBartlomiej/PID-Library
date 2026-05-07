@@ -1,7 +1,7 @@
 /**
  * @file concepts.hpp
  * @author Bartłomiej Kuś 
- * @brief C++20 concepts for type constraints in PID cosntroller library
+ * @brief C++20 concepts for type constraints in PID controller library
  * @date 2026-05-05
  */
 
