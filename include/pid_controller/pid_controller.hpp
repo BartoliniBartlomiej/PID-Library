@@ -292,6 +292,13 @@ public:
         return debug_info_;
     }
 
+    /**
+     * @brief Get the clock object
+     * 
+     * @return Clock& 
+     */
+    [[nodiscard]] Clock& get_clock() noexcept { return clock_; }
+
 private:
     Config config_;
     Clock clock_;

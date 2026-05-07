@@ -7,7 +7,9 @@ add_test(NAME CompileTest COMMAND compile_test)
 
 add_executable(pid_tests
     test_concepts.cpp
-
+    test_clock.cpp
+    test_types.cpp
+    test_pid_basic.cpp
 )
 
 target_link_libraries(pid_tests 

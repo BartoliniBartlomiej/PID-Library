@@ -14,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          submodules: recursive   # <-- pobiera googletest jeśli to submodule
+          submodules: recursive
 
       - name: Install dependencies
         run: |
