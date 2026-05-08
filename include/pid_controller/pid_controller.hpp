@@ -159,13 +159,23 @@ public:
      * @param clock Clock instance for time measurements
      * @throws std::invalid_argument if configuration is invalid
      */
-    explicit PIDController(const Config& config, Clock clock = Clock{})
+    explicit PIDController(const Config& config, Clock& clock)
         : config_(config)
-        , clock_(std::move(clock))
+        , clock_(clock)
     {
         if (!config_.is_valid()) {
             throw std::invalid_argument("Invalid PID configuration");
         }
+        reset();
+    }
+
+    template<typename C = Clock>
+    requires std::is_same_v<C, SystemClock>
+    explicit PIDController(const Config& config)
+        : config_(config)
+        , clock_(default_system_clock()) // Pobieramy statyczną instancję
+    {
+        if (!config_.is_valid()) throw std::invalid_argument("Invalid PID configuration");
         reset();
     }
 
@@ -301,7 +311,7 @@ public:
 
 private:
     Config config_;
-    Clock clock_;
+    Clock& clock_;
     
     // Internal state
     T integral_{0};
@@ -410,6 +420,11 @@ private:
         if (config_.gains.ki > 0) {
             integral_ = actual_i_term / config_.gains.ki;
         }
+    }
+
+    static SystemClock& default_system_clock() {
+        static SystemClock instance;
+        return instance;
     }
 };
 

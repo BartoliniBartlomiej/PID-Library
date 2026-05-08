@@ -33,14 +33,14 @@ TEST(PIDTest, FirstComputeReturnsZero) {
 TEST(PIDTest, BasicResponse) {
     pid::ManualClock clock;
     pid::PIDController<double, pid::ManualClock>::Config config{
-        .gains = {.kp = 5.0, .ki = 0.0, .kd = 0.0},
+        .gains = {.kp = 2.0, .ki = 0.0, .kd = 0.0},
         .output_limits = {-100.0, 100.0}
     };
 
     pid::PIDController<double, pid::ManualClock> pid(config, clock);
 
     pid.compute(10.0, 5.0); // first
-    pid.get_clock().advance(std::chrono::seconds(1));
+    clock.advance(std::chrono::seconds(1));
 
     double out = pid.compute(10.0, 5.0);
     EXPECT_DOUBLE_EQ(out, 10.0);
