@@ -4,7 +4,7 @@ var classpid_1_1PIDController =
     [ "DebugInfo", "structpid_1_1PIDController_1_1DebugInfo.html", "structpid_1_1PIDController_1_1DebugInfo" ],
     [ "Gains", "structpid_1_1PIDController_1_1Gains.html", "structpid_1_1PIDController_1_1Gains" ],
     [ "Limits", "structpid_1_1PIDController_1_1Limits.html", "structpid_1_1PIDController_1_1Limits" ],
-    [ "PIDController", "classpid_1_1PIDController.html#a8f767fd2d177600d12f2d14907d8a047", null ],
+    [ "PIDController", "classpid_1_1PIDController.html#abb43a28242d27b74b956fa9968347183", null ],
     [ "compute", "classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42", null ],
     [ "get_clock", "classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc", null ],
     [ "get_debug_info", "classpid_1_1PIDController.html#a87df63b9bacafa3c442482d9603e3ea7", null ],

@@ -114,9 +114,14 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8f767fd2d177600d12f2d14907d8a047" id="r_a8f767fd2d177600d12f2d14907d8a047"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpid_1_1PIDController.html#a8f767fd2d177600d12f2d14907d8a047">PIDController</a> (const <a class="el" href="structpid_1_1PIDController_1_1Config.html">Config</a> &amp;config, Clock clock=Clock{})</td></tr>
-<tr class="memdesc:a8f767fd2d177600d12f2d14907d8a047"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a PID controller.  <br /></td></tr>
-<tr class="separator:a8f767fd2d177600d12f2d14907d8a047"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb43a28242d27b74b956fa9968347183" id="r_abb43a28242d27b74b956fa9968347183"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpid_1_1PIDController.html#abb43a28242d27b74b956fa9968347183">PIDController</a> (const <a class="el" href="structpid_1_1PIDController_1_1Config.html">Config</a> &amp;config, Clock &amp;clock)</td></tr>
+<tr class="memdesc:abb43a28242d27b74b956fa9968347183"><td class="mdescLeft">&#160;</td><td class="mdescRight">Construct a PID controller.  <br /></td></tr>
+<tr class="separator:abb43a28242d27b74b956fa9968347183"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5aa297b6fc8936f2be48fa30431431c" id="r_ae5aa297b6fc8936f2be48fa30431431c"><td class="memTemplParams" colspan="2"><a id="ae5aa297b6fc8936f2be48fa30431431c" name="ae5aa297b6fc8936f2be48fa30431431c"></a>
+template&lt;typename C  = Clock&gt; <br />
+requires std::is_same_v&lt;C, <a class="el" href="classpid_1_1SystemClock.html">SystemClock</a>&gt;</td></tr>
+<tr class="memitem:ae5aa297b6fc8936f2be48fa30431431c"><td class="memTemplItemLeft" align="right" valign="top">&#160;</td><td class="memTemplItemRight" valign="bottom"><b>PIDController</b> (const <a class="el" href="structpid_1_1PIDController_1_1Config.html">Config</a> &amp;config)</td></tr>
+<tr class="separator:ae5aa297b6fc8936f2be48fa30431431c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a37aa303fb29247d20d18fa8d9da26a42" id="r_a37aa303fb29247d20d18fa8d9da26a42"><td class="memItemLeft" align="right" valign="top">T&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42">compute</a> (T setpoint, T process_variable) noexcept</td></tr>
 <tr class="memdesc:a37aa303fb29247d20d18fa8d9da26a42"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute control output.  <br /></td></tr>
 <tr class="separator:a37aa303fb29247d20d18fa8d9da26a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -147,8 +152,8 @@ Public Member Functions</h2></td></tr>
 class pid::PIDController&lt; T, Clock &gt;</div><dl class="section examples"><dt>Examples</dt><dd><a class="el" href="_2home_2runner_2work_2PID-Library_2PID-Library_2include_2pid_controller_2pid_controller_8hpp-example.html#_a3">/home/runner/work/PID-Library/PID-Library/include/pid_controller/pid_controller.hpp</a>.</dd>
 </dl>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8f767fd2d177600d12f2d14907d8a047" name="a8f767fd2d177600d12f2d14907d8a047"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f767fd2d177600d12f2d14907d8a047">&#9670;&#160;</a></span>PIDController()</h2>
+<a id="abb43a28242d27b74b956fa9968347183" name="abb43a28242d27b74b956fa9968347183"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb43a28242d27b74b956fa9968347183">&#9670;&#160;</a></span>PIDController()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -167,8 +172,8 @@ template&lt;FloatingPoint T = double, ClockInterface Clock = SystemClock&gt; </d
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">Clock&#160;</td>
-          <td class="paramname"><em>clock</em> = <code>Clock{}</code>&#160;</td>
+          <td class="paramtype">Clock &amp;&#160;</td>
+          <td class="paramname"><em>clock</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
