@@ -218,28 +218,30 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2PID-Library_2PID
 <div class="line">    [[nodiscard]] T <a id="a22" name="a22"></a><a class="code hl_function" href="classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42">compute</a>(T setpoint, T process_variable) <span class="keyword">noexcept</span> {</div>
 <div class="line">        <span class="comment">// Calculate error: e(t) = setpoint - measurement</span></div>
 <div class="line">        <span class="keyword">const</span> T error = setpoint - process_variable;</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Get time delta</span></div>
 <div class="line">        <span class="keyword">const</span> <span class="keyword">auto</span> current_time = clock_.now();</div>
 <div class="line">        Duration dt{0};</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="keywordflow">if</span> (first_run_) {</div>
 <div class="line">            first_run_ = <span class="keyword">false</span>;</div>
 <div class="line">            last_time_ = current_time;</div>
 <div class="line">            previous_error_ = error;</div>
 <div class="line">            debug_info_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1DebugInfo.html#a0558e9255c6989c302795eb6d4654fcd">error</a> = error;</div>
 <div class="line">            debug_info_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1DebugInfo.html#ae2007e5f7dcdf294af60bdcf2d8a8b4b">dt</a> = dt;</div>
-<div class="line">            <span class="keywordflow">return</span> 0; <span class="comment">// First run, no valid dt yet</span></div>
+<div class="line">            <span class="keywordflow">return</span> T{0};</div>
 <div class="line">        }</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        dt = std::chrono::duration_cast&lt;Duration&gt;(current_time - last_time_);</div>
 <div class="line">        last_time_ = current_time;</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Guard against zero or negative time steps</span></div>
 <div class="line">        <span class="keywordflow">if</span> (dt.count() &lt;= 0) {</div>
 <div class="line">            <span class="keywordflow">return</span> previous_output_;</div>
 <div class="line">        }</div>
-<div class="line">        </div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">const</span> T dt_sec = dt.count();</div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Compute PID based on selected form</span></div>
 <div class="line">        T output;</div>
 <div class="line">        <span class="keywordflow">if</span> (config_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Config.html#a1877a58e6d4f2b47c0852cdc87505f31">form</a> == PIDForm::Parallel) {</div>
@@ -247,26 +249,28 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2PID-Library_2PID
 <div class="line">        } <span class="keywordflow">else</span> {</div>
 <div class="line">            output = compute_series(error, dt);</div>
 <div class="line">        }</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Clamp output to limits</span></div>
-<div class="line">        output = std::clamp(output, config_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Config.html#a010d8c205dfff62dd588a725438170ea">output_limits</a>.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Limits.html#a2d19d63e565918b4e62cae530cf9e4c8">min_output</a>, </div>
-<div class="line">                                    config_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Config.html#a010d8c205dfff62dd588a725438170ea">output_limits</a>.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Limits.html#a84347e4ef5fb8877082816adfa04995a">max_output</a>);</div>
-<div class="line">        </div>
-<div class="line">        <span class="comment">// Anti-windup: back-calculate integral if output is saturated</span></div>
+<div class="line">        <span class="keyword">const</span> T output_clamped = std::clamp(output,</div>
+<div class="line">                                            config_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Config.html#a010d8c205dfff62dd588a725438170ea">output_limits</a>.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Limits.html#a2d19d63e565918b4e62cae530cf9e4c8">min_output</a>,</div>
+<div class="line">                                            config_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Config.html#a010d8c205dfff62dd588a725438170ea">output_limits</a>.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Limits.html#a84347e4ef5fb8877082816adfa04995a">max_output</a>);</div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Anti-windup: undo last integration step if output is saturated</span></div>
+<div class="line">        <span class="comment">// and error is pushing further into saturation</span></div>
 <div class="line">        <span class="keywordflow">if</span> (config_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1Config.html#a815bd2127ecd7610a9d4ce76d3e09c02">enable_anti_windup</a>) {</div>
-<div class="line">            apply_anti_windup(output);</div>
+<div class="line">            apply_anti_windup(output, output_clamped, error, dt_sec);</div>
 <div class="line">        }</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Update state for next iteration</span></div>
 <div class="line">        previous_error_ = error;</div>
-<div class="line">        previous_output_ = output;</div>
-<div class="line">        </div>
+<div class="line">        previous_output_ = output_clamped;</div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Update debug info</span></div>
 <div class="line">        debug_info_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1DebugInfo.html#a0558e9255c6989c302795eb6d4654fcd">error</a> = error;</div>
-<div class="line">        debug_info_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1DebugInfo.html#ab53954b4ba7e28e46eafccc150640abf">output</a> = output;</div>
+<div class="line">        debug_info_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1DebugInfo.html#ab53954b4ba7e28e46eafccc150640abf">output</a> = output_clamped;</div>
 <div class="line">        debug_info_.<a class="code hl_variable" href="structpid_1_1PIDController_1_1DebugInfo.html#ae2007e5f7dcdf294af60bdcf2d8a8b4b">dt</a> = dt;</div>
-<div class="line">        </div>
-<div class="line">        <span class="keywordflow">return</span> output;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">return</span> output_clamped;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    <span class="keywordtype">void</span> <a class="code hl_function" href="classpid_1_1PIDController.html#a483bd92c294f44733941ea9d06ff9d54">reset</a>() <span class="keyword">noexcept</span> {</div>
@@ -321,77 +325,104 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2PID-Library_2PID
 <div class="line"> </div>
 <div class="line">    [[nodiscard]] T compute_parallel(T error, Duration dt) <span class="keyword">noexcept</span> {</div>
 <div class="line">        <span class="keyword">const</span> T dt_sec = dt.count();</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Proportional term</span></div>
 <div class="line">        <span class="keyword">const</span> T p_term = config_.gains.kp * error;</div>
-<div class="line">        </div>
-<div class="line">        <span class="comment">// Integral term (trapezoidal integration)</span></div>
-<div class="line">        integral_ += error * dt_sec;</div>
-<div class="line">        <span class="keyword">const</span> T i_term = config_.gains.ki * integral_;</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Derivative term (with optional filtering)</span></div>
 <div class="line">        T derivative = (error - previous_error_) / dt_sec;</div>
 <div class="line">        derivative = apply_derivative_filter(derivative, dt);</div>
 <div class="line">        <span class="keyword">const</span> T d_term = config_.gains.kd * derivative;</div>
-<div class="line">        </div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">const</span> T p_plus_d    = p_term + d_term;</div>
+<div class="line">        <span class="keyword">const</span> T i_term_prev = config_.gains.ki * integral_;</div>
+<div class="line">        <span class="keyword">const</span> T output_test = p_plus_d + i_term_prev;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> saturated_high = output_test &gt; config_.output_limits.max_output;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> saturated_low  = output_test &lt; config_.output_limits.min_output;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> would_worsen   = (saturated_high &amp;&amp; error &gt; T{0})</div>
+<div class="line">                                || (saturated_low  &amp;&amp; error &lt; T{0});</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (!config_.enable_anti_windup || !would_worsen) {</div>
+<div class="line">            integral_ += error * dt_sec;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">const</span> T i_term = config_.gains.ki * integral_;</div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Update debug info</span></div>
 <div class="line">        debug_info_.p_term = p_term;</div>
 <div class="line">        debug_info_.i_term = i_term;</div>
 <div class="line">        debug_info_.d_term = d_term;</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="keywordflow">return</span> p_term + i_term + d_term;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    [[nodiscard]] T compute_series(T error, Duration dt) <span class="keyword">noexcept</span> {</div>
 <div class="line">        <span class="keyword">const</span> T dt_sec = dt.count();</div>
-<div class="line">        </div>
-<div class="line">        <span class="comment">// Integral term</span></div>
-<div class="line">        integral_ += error * dt_sec;</div>
-<div class="line">        T i_contribution = 0;</div>
-<div class="line">        <span class="keywordflow">if</span> (config_.gains.ki &gt; 0 &amp;&amp; config_.gains.kp &gt; 0) {</div>
-<div class="line">            <span class="keyword">const</span> T Ti = config_.gains.kp / config_.gains.ki;</div>
-<div class="line">            i_contribution = integral_ / Ti;</div>
-<div class="line">        }</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Derivative term</span></div>
 <div class="line">        T derivative = (error - previous_error_) / dt_sec;</div>
 <div class="line">        derivative = apply_derivative_filter(derivative, dt);</div>
-<div class="line">        T d_contribution = 0;</div>
-<div class="line">        <span class="keywordflow">if</span> (config_.gains.kp &gt; 0) {</div>
-<div class="line">            <span class="keyword">const</span> T Td = config_.gains.kd / config_.gains.kp;</div>
+<div class="line">        T d_contribution = T{0};</div>
+<div class="line">        <span class="keywordflow">if</span> (config_.gains.kp &gt; T{0}) {</div>
+<div class="line">            <span class="keyword">const</span> T Td   = config_.gains.kd / config_.gains.kp;</div>
 <div class="line">            d_contribution = Td * derivative;</div>
 <div class="line">        }</div>
-<div class="line">        </div>
+<div class="line"> </div>
+<div class="line">        <span class="comment">// Integral term — całkowanie warunkowe (anti-windup clamping)</span></div>
+<div class="line">        T i_contribution_prev = T{0};</div>
+<div class="line">        <span class="keywordflow">if</span> (config_.gains.ki &gt; T{0} &amp;&amp; config_.gains.kp &gt; T{0}) {</div>
+<div class="line">            <span class="keyword">const</span> T Ti = config_.gains.kp / config_.gains.ki;</div>
+<div class="line">            i_contribution_prev = integral_ / Ti;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">const</span> T output_test   = config_.gains.kp * (error + i_contribution_prev + d_contribution);</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> saturated_high = output_test &gt; config_.output_limits.max_output;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> saturated_low  = output_test &lt; config_.output_limits.min_output;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> would_worsen   = (saturated_high &amp;&amp; error &gt; T{0})</div>
+<div class="line">                                || (saturated_low  &amp;&amp; error &lt; T{0});</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (!config_.enable_anti_windup || !would_worsen) {</div>
+<div class="line">            integral_ += error * dt_sec;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
+<div class="line">        T i_contribution = T{0};</div>
+<div class="line">        <span class="keywordflow">if</span> (config_.gains.ki &gt; T{0} &amp;&amp; config_.gains.kp &gt; T{0}) {</div>
+<div class="line">            <span class="keyword">const</span> T Ti = config_.gains.kp / config_.gains.ki;</div>
+<div class="line">            i_contribution = integral_ / Ti;</div>
+<div class="line">        }</div>
+<div class="line"> </div>
 <div class="line">        <span class="keyword">const</span> T output = config_.gains.kp * (error + i_contribution + d_contribution);</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="comment">// Update debug info</span></div>
 <div class="line">        debug_info_.p_term = config_.gains.kp * error;</div>
 <div class="line">        debug_info_.i_term = config_.gains.kp * i_contribution;</div>
 <div class="line">        debug_info_.d_term = config_.gains.kp * d_contribution;</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="keywordflow">return</span> output;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
 <div class="line">    [[nodiscard]] T apply_derivative_filter(T raw_derivative, Duration dt) <span class="keyword">noexcept</span> {</div>
-<div class="line">        <span class="keywordflow">if</span> (config_.derivative_filter_coeff &lt;= 0) {</div>
-<div class="line">            <span class="keywordflow">return</span> raw_derivative; <span class="comment">// No filtering</span></div>
+<div class="line">        <span class="keywordflow">if</span> (config_.derivative_filter_coeff &lt;= T{0}) {</div>
+<div class="line">            <span class="keywordflow">return</span> raw_derivative;</div>
 <div class="line">        }</div>
-<div class="line">        </div>
-<div class="line">        <span class="keyword">const</span> T alpha = config_.derivative_filter_coeff;</div>
-<div class="line">        <span class="keyword">const</span> T filtered = alpha * previous_derivative_ + (1 - alpha) * raw_derivative;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keyword">const</span> T alpha    = config_.derivative_filter_coeff;</div>
+<div class="line">        <span class="keyword">const</span> T filtered = alpha * previous_derivative_ + (T{1} - alpha) * raw_derivative;</div>
 <div class="line">        previous_derivative_ = filtered;</div>
-<div class="line">        </div>
+<div class="line"> </div>
 <div class="line">        <span class="keywordflow">return</span> filtered;</div>
 <div class="line">    }</div>
 <div class="line"> </div>
-<div class="line">    <span class="keywordtype">void</span> apply_anti_windup(T clamped_output) <span class="keyword">noexcept</span> {</div>
-<div class="line">        <span class="comment">// If output was clamped, back-calculate integral</span></div>
-<div class="line">        <span class="keyword">const</span> T unclamped_i_term = debug_info_.i_term;</div>
-<div class="line">        <span class="keyword">const</span> T actual_i_term = clamped_output - debug_info_.p_term - debug_info_.d_term;</div>
-<div class="line">        </div>
-<div class="line">        <span class="comment">// Update integral to prevent further windup</span></div>
-<div class="line">        <span class="keywordflow">if</span> (config_.gains.ki &gt; 0) {</div>
-<div class="line">            integral_ = actual_i_term / config_.gains.ki;</div>
+<div class="line">    <span class="keywordtype">void</span> apply_anti_windup(T raw_output, T clamped_output, T error, T dt_sec) <span class="keyword">noexcept</span> {</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> saturated_high = raw_output &gt; config_.output_limits.max_output;</div>
+<div class="line">        <span class="keyword">const</span> <span class="keywordtype">bool</span> saturated_low  = raw_output &lt; config_.output_limits.min_output;</div>
+<div class="line"> </div>
+<div class="line">        <span class="keywordflow">if</span> (saturated_high || saturated_low) {</div>
+<div class="line">            <span class="comment">// Undo integration only if error is pushing further into saturation</span></div>
+<div class="line">            <span class="keywordflow">if</span> ((saturated_high &amp;&amp; error &gt; 0) || (saturated_low &amp;&amp; error &lt; 0)) {</div>
+<div class="line">                integral_ -= error * dt_sec;</div>
+<div class="line">            }</div>
 <div class="line">        }</div>
 <div class="line">    }</div>
 <div class="line"> </div>
@@ -403,13 +434,13 @@ $(document).ready(function(){initNavTree('_2home_2runner_2work_2PID-Library_2PID
 <div class="line"> </div>
 <div class="line">} <span class="comment">// namespace pid</span></div>
 <div class="ttc" id="aclasspid_1_1PIDController_html_a37aa303fb29247d20d18fa8d9da26a42"><div class="ttname"><a href="classpid_1_1PIDController.html#a37aa303fb29247d20d18fa8d9da26a42">pid::PIDController::compute</a></div><div class="ttdeci">T compute(T setpoint, T process_variable) noexcept</div><div class="ttdoc">Compute control output.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:192</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_a483bd92c294f44733941ea9d06ff9d54"><div class="ttname"><a href="classpid_1_1PIDController.html#a483bd92c294f44733941ea9d06ff9d54">pid::PIDController::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Reset controller to initial state.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:252</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_a5e68eeeecb24a45bb9b8b7b56740e2cc"><div class="ttname"><a href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">pid::PIDController::get_clock</a></div><div class="ttdeci">Clock &amp; get_clock() noexcept</div><div class="ttdoc">Get the clock object.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:310</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_a6d76981c38bddde1c64dfb6d107ab587"><div class="ttname"><a href="classpid_1_1PIDController.html#a6d76981c38bddde1c64dfb6d107ab587">pid::PIDController::get_gains</a></div><div class="ttdeci">Gains get_gains() const noexcept</div><div class="ttdoc">Get current PID gains.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:275</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_a7a4052ef97e822184d430aae1dc9ed71"><div class="ttname"><a href="classpid_1_1PIDController.html#a7a4052ef97e822184d430aae1dc9ed71">pid::PIDController::set_output_limits</a></div><div class="ttdeci">void set_output_limits(const Limits &amp;limits) noexcept</div><div class="ttdoc">Update output limits during runtime.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:283</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_a87df63b9bacafa3c442482d9603e3ea7"><div class="ttname"><a href="classpid_1_1PIDController.html#a87df63b9bacafa3c442482d9603e3ea7">pid::PIDController::get_debug_info</a></div><div class="ttdeci">DebugInfo get_debug_info() const noexcept</div><div class="ttdoc">Get diagnostic information from last compute() call.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:301</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_ae8dc9868b72a8966f6e58b01ed5326f4"><div class="ttname"><a href="classpid_1_1PIDController.html#ae8dc9868b72a8966f6e58b01ed5326f4">pid::PIDController::set_gains</a></div><div class="ttdeci">void set_gains(const Gains &amp;gains) noexcept</div><div class="ttdoc">Update PID gains during runtime.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:265</div></div>
-<div class="ttc" id="aclasspid_1_1PIDController_html_aefb5aa0314881106a98fcb2a7dfbef6a"><div class="ttname"><a href="classpid_1_1PIDController.html#aefb5aa0314881106a98fcb2a7dfbef6a">pid::PIDController::get_output_limits</a></div><div class="ttdeci">Limits get_output_limits() const noexcept</div><div class="ttdoc">Get current output limits.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:293</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a483bd92c294f44733941ea9d06ff9d54"><div class="ttname"><a href="classpid_1_1PIDController.html#a483bd92c294f44733941ea9d06ff9d54">pid::PIDController::reset</a></div><div class="ttdeci">void reset() noexcept</div><div class="ttdoc">Reset controller to initial state.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:256</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a5e68eeeecb24a45bb9b8b7b56740e2cc"><div class="ttname"><a href="classpid_1_1PIDController.html#a5e68eeeecb24a45bb9b8b7b56740e2cc">pid::PIDController::get_clock</a></div><div class="ttdeci">Clock &amp; get_clock() noexcept</div><div class="ttdoc">Get the clock object.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:314</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a6d76981c38bddde1c64dfb6d107ab587"><div class="ttname"><a href="classpid_1_1PIDController.html#a6d76981c38bddde1c64dfb6d107ab587">pid::PIDController::get_gains</a></div><div class="ttdeci">Gains get_gains() const noexcept</div><div class="ttdoc">Get current PID gains.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:279</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a7a4052ef97e822184d430aae1dc9ed71"><div class="ttname"><a href="classpid_1_1PIDController.html#a7a4052ef97e822184d430aae1dc9ed71">pid::PIDController::set_output_limits</a></div><div class="ttdeci">void set_output_limits(const Limits &amp;limits) noexcept</div><div class="ttdoc">Update output limits during runtime.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:287</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_a87df63b9bacafa3c442482d9603e3ea7"><div class="ttname"><a href="classpid_1_1PIDController.html#a87df63b9bacafa3c442482d9603e3ea7">pid::PIDController::get_debug_info</a></div><div class="ttdeci">DebugInfo get_debug_info() const noexcept</div><div class="ttdoc">Get diagnostic information from last compute() call.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:305</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_ae8dc9868b72a8966f6e58b01ed5326f4"><div class="ttname"><a href="classpid_1_1PIDController.html#ae8dc9868b72a8966f6e58b01ed5326f4">pid::PIDController::set_gains</a></div><div class="ttdeci">void set_gains(const Gains &amp;gains) noexcept</div><div class="ttdoc">Update PID gains during runtime.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:269</div></div>
+<div class="ttc" id="aclasspid_1_1PIDController_html_aefb5aa0314881106a98fcb2a7dfbef6a"><div class="ttname"><a href="classpid_1_1PIDController.html#aefb5aa0314881106a98fcb2a7dfbef6a">pid::PIDController::get_output_limits</a></div><div class="ttdeci">Limits get_output_limits() const noexcept</div><div class="ttdoc">Get current output limits.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:297</div></div>
 <div class="ttc" id="aclock__interface_8hpp_html"><div class="ttname"><a href="clock__interface_8hpp.html">clock_interface.hpp</a></div><div class="ttdoc">Clock abstractions for time management and dependency injection.</div></div>
 <div class="ttc" id="aconcepts_8hpp_html"><div class="ttname"><a href="concepts_8hpp.html">concepts.hpp</a></div><div class="ttdoc">C++20 concepts for type constraints in PID controller library.</div></div>
 <div class="ttc" id="astructpid_1_1PIDController_1_1Config_html_a010d8c205dfff62dd588a725438170ea"><div class="ttname"><a href="structpid_1_1PIDController_1_1Config.html#a010d8c205dfff62dd588a725438170ea">pid::PIDController::Config::output_limits</a></div><div class="ttdeci">Limits output_limits</div><div class="ttdoc">Output saturation limits.</div><div class="ttdef"><b>Definition</b> pid_controller.hpp:127</div></div>
