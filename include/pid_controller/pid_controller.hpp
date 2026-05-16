@@ -192,28 +192,30 @@ public:
     [[nodiscard]] T compute(T setpoint, T process_variable) noexcept {
         // Calculate error: e(t) = setpoint - measurement
         const T error = setpoint - process_variable;
-        
+
         // Get time delta
         const auto current_time = clock_.now();
         Duration dt{0};
-        
+
         if (first_run_) {
             first_run_ = false;
             last_time_ = current_time;
             previous_error_ = error;
             debug_info_.error = error;
             debug_info_.dt = dt;
-            return 0; // First run, no valid dt yet
+            return T{0};
         }
-        
+
         dt = std::chrono::duration_cast<Duration>(current_time - last_time_);
         last_time_ = current_time;
-        
+
         // Guard against zero or negative time steps
         if (dt.count() <= 0) {
             return previous_output_;
         }
-        
+
+        const T dt_sec = dt.count();
+
         // Compute PID based on selected form
         T output;
         if (config_.form == PIDForm::Parallel) {
@@ -221,26 +223,28 @@ public:
         } else {
             output = compute_series(error, dt);
         }
-        
+
         // Clamp output to limits
-        output = std::clamp(output, config_.output_limits.min_output, 
-                                    config_.output_limits.max_output);
-        
-        // Anti-windup: back-calculate integral if output is saturated
+        const T output_clamped = std::clamp(output,
+                                            config_.output_limits.min_output,
+                                            config_.output_limits.max_output);
+
+        // Anti-windup: undo last integration step if output is saturated
+        // and error is pushing further into saturation
         if (config_.enable_anti_windup) {
-            apply_anti_windup(output);
+            apply_anti_windup(output, output_clamped, error, dt_sec);
         }
-        
+
         // Update state for next iteration
         previous_error_ = error;
-        previous_output_ = output;
-        
+        previous_output_ = output_clamped;
+
         // Update debug info
         debug_info_.error = error;
-        debug_info_.output = output;
+        debug_info_.output = output_clamped;
         debug_info_.dt = dt;
-        
-        return output;
+
+        return output_clamped;
     }
 
     /**
@@ -331,24 +335,35 @@ private:
      */
     [[nodiscard]] T compute_parallel(T error, Duration dt) noexcept {
         const T dt_sec = dt.count();
-        
+
         // Proportional term
         const T p_term = config_.gains.kp * error;
-        
-        // Integral term (trapezoidal integration)
-        integral_ += error * dt_sec;
-        const T i_term = config_.gains.ki * integral_;
-        
+
         // Derivative term (with optional filtering)
         T derivative = (error - previous_error_) / dt_sec;
         derivative = apply_derivative_filter(derivative, dt);
         const T d_term = config_.gains.kd * derivative;
-        
+
+        const T p_plus_d    = p_term + d_term;
+        const T i_term_prev = config_.gains.ki * integral_;
+        const T output_test = p_plus_d + i_term_prev;
+
+        const bool saturated_high = output_test > config_.output_limits.max_output;
+        const bool saturated_low  = output_test < config_.output_limits.min_output;
+        const bool would_worsen   = (saturated_high && error > T{0})
+                                || (saturated_low  && error < T{0});
+
+        if (!config_.enable_anti_windup || !would_worsen) {
+            integral_ += error * dt_sec;
+        }
+
+        const T i_term = config_.gains.ki * integral_;
+
         // Update debug info
         debug_info_.p_term = p_term;
         debug_info_.i_term = i_term;
         debug_info_.d_term = d_term;
-        
+
         return p_term + i_term + d_term;
     }
 
@@ -360,31 +375,46 @@ private:
      */
     [[nodiscard]] T compute_series(T error, Duration dt) noexcept {
         const T dt_sec = dt.count();
-        
-        // Integral term
-        integral_ += error * dt_sec;
-        T i_contribution = 0;
-        if (config_.gains.ki > 0 && config_.gains.kp > 0) {
-            const T Ti = config_.gains.kp / config_.gains.ki;
-            i_contribution = integral_ / Ti;
-        }
-        
+
         // Derivative term
         T derivative = (error - previous_error_) / dt_sec;
         derivative = apply_derivative_filter(derivative, dt);
-        T d_contribution = 0;
-        if (config_.gains.kp > 0) {
-            const T Td = config_.gains.kd / config_.gains.kp;
+        T d_contribution = T{0};
+        if (config_.gains.kp > T{0}) {
+            const T Td   = config_.gains.kd / config_.gains.kp;
             d_contribution = Td * derivative;
         }
-        
+
+        // Integral term — całkowanie warunkowe (anti-windup clamping)
+        T i_contribution_prev = T{0};
+        if (config_.gains.ki > T{0} && config_.gains.kp > T{0}) {
+            const T Ti = config_.gains.kp / config_.gains.ki;
+            i_contribution_prev = integral_ / Ti;
+        }
+
+        const T output_test   = config_.gains.kp * (error + i_contribution_prev + d_contribution);
+        const bool saturated_high = output_test > config_.output_limits.max_output;
+        const bool saturated_low  = output_test < config_.output_limits.min_output;
+        const bool would_worsen   = (saturated_high && error > T{0})
+                                || (saturated_low  && error < T{0});
+
+        if (!config_.enable_anti_windup || !would_worsen) {
+            integral_ += error * dt_sec;
+        }
+
+        T i_contribution = T{0};
+        if (config_.gains.ki > T{0} && config_.gains.kp > T{0}) {
+            const T Ti = config_.gains.kp / config_.gains.ki;
+            i_contribution = integral_ / Ti;
+        }
+
         const T output = config_.gains.kp * (error + i_contribution + d_contribution);
-        
+
         // Update debug info
         debug_info_.p_term = config_.gains.kp * error;
         debug_info_.i_term = config_.gains.kp * i_contribution;
         debug_info_.d_term = config_.gains.kp * d_contribution;
-        
+
         return output;
     }
 
@@ -392,33 +422,41 @@ private:
      * @brief Apply low-pass filter to derivative term
      * 
      * Filtered derivative = α·previous + (1-α)·current
-     * where α = τ/(τ+dt), τ is filter time constant
+     * where α is the filter coefficient (0 = no filtering, 1 = maximum filtering)
      */
     [[nodiscard]] T apply_derivative_filter(T raw_derivative, Duration dt) noexcept {
-        if (config_.derivative_filter_coeff <= 0) {
-            return raw_derivative; // No filtering
+        if (config_.derivative_filter_coeff <= T{0}) {
+            return raw_derivative;
         }
-        
-        const T alpha = config_.derivative_filter_coeff;
-        const T filtered = alpha * previous_derivative_ + (1 - alpha) * raw_derivative;
+
+        const T alpha    = config_.derivative_filter_coeff;
+        const T filtered = alpha * previous_derivative_ + (T{1} - alpha) * raw_derivative;
         previous_derivative_ = filtered;
-        
+
         return filtered;
     }
 
     /**
      * @brief Apply anti-windup mechanism (clamping method)
      * 
-     * If output is saturated, stop integral accumulation in that direction
+     * If output is saturated, stop integral accumulation in that direction.
+     * Uses the clamping method: if the output is saturated AND the error is driving
+     * the integrator further into saturation, the last integration step is undone.
+     * 
+     * @param raw_output  Unclamped output before saturation
+     * @param clamped_output Output after clamping to limits
+     * @param error       Current error e(t) = setpoint - process_variable
+     * @param dt_sec      Current time step in seconds
      */
-    void apply_anti_windup(T clamped_output) noexcept {
-        // If output was clamped, back-calculate integral
-        const T unclamped_i_term = debug_info_.i_term;
-        const T actual_i_term = clamped_output - debug_info_.p_term - debug_info_.d_term;
-        
-        // Update integral to prevent further windup
-        if (config_.gains.ki > 0) {
-            integral_ = actual_i_term / config_.gains.ki;
+    void apply_anti_windup(T raw_output, T clamped_output, T error, T dt_sec) noexcept {
+        const bool saturated_high = raw_output > config_.output_limits.max_output;
+        const bool saturated_low  = raw_output < config_.output_limits.min_output;
+
+        if (saturated_high || saturated_low) {
+            // Undo integration only if error is pushing further into saturation
+            if ((saturated_high && error > 0) || (saturated_low && error < 0)) {
+                integral_ -= error * dt_sec;
+            }
         }
     }
 

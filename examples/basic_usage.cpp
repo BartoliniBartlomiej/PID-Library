@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
-#include <fstream> // Dodano do obsługi plików CSV
+#include <fstream>
 
 struct ThermalPlant {
     double temperature  = 20.0;
@@ -95,7 +95,6 @@ void demo_basic_pid() {
         double t = i * dt_sec;
         print_row(t, setpoint, plant.temperature, dbg);
         
-        // Zapis do CSV
         csv << t << "," << setpoint << "," << plant.temperature << "," << dbg.output << "\n";
     }
 }
@@ -103,33 +102,39 @@ void demo_basic_pid() {
 void demo_anti_windup() {
     print_header("DEMO 2: Anti-Windup — Preventing Integrator Saturation");
 
-    auto make_pid = [](bool anti_windup) {
-        pid::PIDController<double, pid::ManualClock>::Config cfg{
-            .gains          = {.kp = 1.0, .ki = 0.5, .kd = 0.0},
-            .output_limits  = {0.0, 1.0},
-            .form           = pid::PIDForm::Parallel,
-            .enable_anti_windup = anti_windup
-        };
-        pid::ManualClock clk;
-        return std::make_pair(pid::PIDController<double, pid::ManualClock>(cfg, clk), clk);
+    pid::PIDController<double, pid::ManualClock>::Config cfg_aw{
+        .gains          = {.kp = 2.0, .ki = 1.5, .kd = 0.0},
+        .output_limits  = {0.0, 1.0},
+        .form           = pid::PIDForm::Parallel,
+        .enable_anti_windup = true
     };
 
-    auto [pid_aw, clk_aw]   = make_pid(true);
-    auto [pid_now, clk_now] = make_pid(false);
+    pid::PIDController<double, pid::ManualClock>::Config cfg_now{
+        .gains          = {.kp = 2.0, .ki = 1.5, .kd = 0.0},
+        .output_limits  = {0.0, 1.0},
+        .form           = pid::PIDForm::Parallel,
+        .enable_anti_windup = false
+    };
+
+    pid::ManualClock clk_aw;
+    pid::PIDController<double, pid::ManualClock> pid_aw(cfg_aw, clk_aw);
+
+    pid::ManualClock clk_now;
+    pid::PIDController<double, pid::ManualClock> pid_now(cfg_now, clk_now);
 
     ThermalPlant plant_aw, plant_now;
-    const double sp = 50.0;
+    const double sp = 80.0;
     const double dt = 0.5;
 
     std::ofstream csv("demo2_anti_windup.csv");
     csv << "time,setpoint,temp_aw,temp_now\n";
 
-    std::cout << std::left << std::setw(6) << "t[s]"
+    std::cout << std::left << std::setw(6)  << "t[s]"
               << std::setw(20) << "Temp (anti-windup)"
               << std::setw(20) << "Temp (no anti-windup)" << "\n"
               << std::string(50, '-') << "\n";
 
-    for (int i = 0; i < 25; ++i) {
+    for (int i = 0; i < 40; ++i) {
         clk_aw.advance(std::chrono::duration<double>(dt));
         clk_now.advance(std::chrono::duration<double>(dt));
 
@@ -196,7 +201,6 @@ void demo_series_vs_parallel() {
         .form          = pid::PIDForm::Parallel
     };
 
-    // Zegary i kontrolery tworzymy bezpośrednio w funkcji demo
     pid::ManualClock clk_par;
     pid::PIDController<double, pid::ManualClock> pid_par(cfg, clk_par);
 
@@ -213,7 +217,7 @@ void demo_series_vs_parallel() {
 
     std::cout << "Simulating... (check demo4_series_vs_parallel.csv for results)\n";
 
-    for (int i = 0; i < 40; ++i) { // Więcej kroków
+    for (int i = 0; i < 40; ++i) { 
         clk_par.advance(std::chrono::duration<double>(dt));
         clk_ser.advance(std::chrono::duration<double>(dt));
 
@@ -223,7 +227,6 @@ void demo_series_vs_parallel() {
         double t = i * dt;
         csv << t << "," << sp << "," << p_par.temperature << "," << p_ser.temperature << "\n";
         
-        // Opcjonalnie: dodaj print, żeby widzieć, że coś się dzieje
         if (i % 10 == 0) std::cout << "T=" << t << "s | Par: " << p_par.temperature << " | Ser: " << p_ser.temperature << "\n";
     }
 }
@@ -234,13 +237,13 @@ void demo_derivative_filter() {
     pid::PIDController<double, pid::ManualClock>::Config cfg{
         .gains                   = {.kp = 0.8, .ki = 0.1, .kd = 0.3},
         .output_limits           = {-50.0, 50.0},
-        .derivative_filter_coeff = 0.0 // Dla pierwszego kontrolera
+        .derivative_filter_coeff = 0.0
     };
 
     pid::ManualClock clk_nf;
     pid::PIDController<double, pid::ManualClock> pid_nf(cfg, clk_nf);
 
-    cfg.derivative_filter_coeff = 0.8; // Dla drugiego kontrolera
+    cfg.derivative_filter_coeff = 0.8;
     pid::ManualClock clk_f;
     pid::PIDController<double, pid::ManualClock> pid_f(cfg, clk_f);
 
@@ -281,6 +284,6 @@ int main() {
     demo_gain_tuning();
     demo_series_vs_parallel();
     demo_derivative_filter();
-    std::cout << "\nWszystkie dema zakończone. Wygenerowano pliki CSV do wykresów.\n";
+    std::cout << "\nAll demos completed. CSV files generated for plotting.\n";
     return 0;
 }
